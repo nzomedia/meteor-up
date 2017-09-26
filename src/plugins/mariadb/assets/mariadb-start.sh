@@ -22,7 +22,8 @@ sudo docker run \
   -d \
   --restart=always \
   --publish=127.0.0.1:3306:3306 \
-  --volume=<%= mariaDbDir %>:/data/db \
+  --volume=/opt/mariadb/data:<%= mariaDbDir %> \
+  --volume=/opt/mariadb/config:<%= mariaDbConfigDir %> \
   -e MYSQL_ROOT_PASSWORD=<%= mariadbRootPassord %> \
   -e MYSQL_DATABASE=<%= mariadbDbName %> \
   -e MYSQL_USER=<%= mariadbUserName %> \

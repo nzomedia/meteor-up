@@ -33,10 +33,10 @@ export function setup(api) {
   });
 
   //TODO externaliser la config, puis la monter
-  // list.copy('Copying mariadb.conf', {
-  //   src: api.resolvePath(__dirname, 'assets/mariadb.conf'),
-  //   dest: '/opt/mariadb/mariadb.conf'
-  // });
+  list.copy('Copying mariadb.conf', {
+    src: api.resolvePath(__dirname, 'assets/mariadb.conf'),
+    dest: '/opt/mariadb/config/my.cnf'
+  });
 
   const sessions = api.getSessions(['mariadb']);
 
@@ -66,10 +66,11 @@ export function start(api) {
     vars: {
       mariadbVersion: config.version || '15.1',
       mariaDbDir: '/var/lib/mysql',
+      mariadbConfigDir: '/etc/mysql/conf.d',
       mariadbRootPassord: 'passer',
-      mariadbDbName: 'restau',
-      mariadbUserName: 'server_local',
-      mariadbUserPassword: 'passer'
+      mariadbDbName: config.databaseName,
+      mariadbUserName: config.databaseUser,
+      mariadbUserPassword: config .userPassword
 
     }
   });
