@@ -4,14 +4,14 @@ MARIADB_VERSION=<%= mariadbVersion %>
 
 set -e
 
-sudo mkdir -p <%= mariaDbDir %>
+#pas besoin de creer le dossier de données ici sudo mkdir -p <%= mariaDbDir %>
 sudo docker pull mariadb:$MARIADB_VERSION
 
 set +e
 
 sudo docker update --restart=no mariadb
-sudo docker exec mariadb mariadb quit
-sleep 2
+sudo docker exec mariadb mysqld stop
+sleep 5
 sudo docker rm -f mariadb
 
 set -e
@@ -23,6 +23,9 @@ sudo docker run \
   --restart=always \
   --publish=127.0.0.1:3306:3306 \
   --volume=<%= mariaDbDir %>:/data/db \
-  --volume=/etc/mysql/conf.d:/mariadb.conf \
+  -e MYSQL_ROOT_PASSWORD=<%= mariadbRootPassord %> \
+  -e MYSQL_DATABASE=<%= mariadbDbName %> \
+  -e MYSQL_USER=<%= mariadbUserName %> \
+  -e MYSQL_PASSWORD=<%= mariadbUserPassword %>
   --name=mariadb \
   mariadb:$MARIADB_VERSION mariadb

@@ -32,10 +32,11 @@ export function setup(api) {
     script: api.resolvePath(__dirname, 'assets/mariadb-setup.sh')
   });
 
-  list.copy('Copying mariadb.conf', {
-    src: api.resolvePath(__dirname, 'assets/mariadb.conf'),
-    dest: '/opt/mariadb/mariadb.conf'
-  });
+  //TODO externaliser la config, puis la monter
+  // list.copy('Copying mariadb.conf', {
+  //   src: api.resolvePath(__dirname, 'assets/mariadb.conf'),
+  //   dest: '/opt/mariadb/mariadb.conf'
+  // });
 
   const sessions = api.getSessions(['mariadb']);
 
@@ -47,15 +48,16 @@ export function start(api) {
 
   const mariadbSessions = api.getSessions(['mariadb']);
   const meteorSessions = api.getSessions(['app']);
-  const config = api.getConfig().mongo;
+  const config = api.getConfig().mariadb;
 
-  if (
-    meteorSessions.length !== 1 ||
-    mariadbSessions[0]._host !== meteorSessions[0]._host
-  ) {
-    log('Skipping mariadb start. Incompatible config');
-    return;
-  }
+  //Mariadb will be on another host ( or container)
+  // if (
+  //   meteorSessions.length !== 1 ||
+  //   mariadbSessions[0]._host !== meteorSessions[0]._host
+  // ) {
+  //   log('Skipping mariadb start. Incompatible config');
+  //   return;
+  // }
 
   const list = nodemiral.taskList('Start Mariadb');
 
@@ -63,12 +65,15 @@ export function start(api) {
     script: api.resolvePath(__dirname, 'assets/mariadb-start.sh'),
     vars: {
       mariadbVersion: config.version || '15.1',
-      mariaDbDir: '/var/lib/mysql'
+      mariaDbDir: '/var/lib/mysql',
+      mariadbRootPassord: 'passer',
+      mariadbDbName: 'restau',
+      mariadbUserName: 'server_local',
+      mariadbUserPassword: 'passer'
+
     }
   });
-
-  const sessions = api.getSessions(['mariadb']);
-  return api.runTaskList(list, sessions, { verbose: api.verbose });
+  return api.runTaskList(list, mariadbSessions, { verbose: api.verbose });
 }
 
 export function stop(api) {

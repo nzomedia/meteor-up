@@ -2,10 +2,11 @@ import * as _commands from './commands';
 
 import _validator from './validate';
 
+export const name = "mariadb";
 export const description = 'Commands to manage MariaDB';
 export let commands = _commands;
 export const validate = {
-  mongo: _validator
+  mariadb: _validator
 };
 
 export function prepareConfig(config) {
@@ -14,7 +15,9 @@ export function prepareConfig(config) {
   }
 
   config.app.env = config.app.env || {};
-  config.app.env['MARIADB_URL'] = `mysql://mariadb:3306/${config.app.name.split('.').join('')}`;
+  var dbName = config.mariadb.databaseName || config.app.name.split('.').join('');
+  var dbPort = config.mariadb.port || 3306;
+  config.app.env['MARIADB_URL'] = `mysql://mariadb:${dbPort}/${dbName}`;
 
   if (!config.app.docker) {
     config.app.docker = {};
@@ -35,3 +38,4 @@ export const hooks = {
     }
   }
 };
+
